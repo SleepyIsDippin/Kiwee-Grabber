@@ -610,7 +610,7 @@ webhookw = "{webhook}"
             # verify name
             name = self.name.get()
             try:
-                new_name = name.replace("\n","_")
+                new_name = name.replace(" ","_")
             except:pass
             try:
                 googleshare = self.googleshare.get()
