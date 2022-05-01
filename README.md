@@ -28,7 +28,7 @@ First Install Python 3.9 (ADD PYTHON 3.9 TO PATH) : https://www.python.org/downl
 
 Then, run requirements.bat
 
-if your not sure, watch this video : 
+if your not sure, watch this video : https://vimeo.com/705005585
 
 # Credits
 credits to ui and dextority for helping me with this project ^^
